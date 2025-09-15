@@ -1,0 +1,114 @@
+.main-container {
+  max-width: 420px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  padding: 0 0 32px 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  background: #f9f9f9;
+  border-radius: 12px 12px 0 0;
+  padding: 24px 32px 16px 32px;
+  border-bottom: 1px solid #eee;
+}
+.logo {
+  width: 40px;
+  height: 40px;
+  margin-right: 16px;
+}
+.app-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #222;
+  letter-spacing: 0.5px;
+}
+
+.form-card {
+  padding: 24px 32px 0 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+label {
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #222;
+}
+input,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #fafafa;
+  margin-bottom: 0;
+  transition: border 0.2s;
+}
+input:focus,
+select:focus {
+  border: 1.5px solid #cc0000;
+  outline: none;
+}
+.yt-btn {
+  background: #cc0000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 8px;
+}
+.yt-btn:disabled {
+  background: #e57373;
+  cursor: not-allowed;
+}
+.loading {
+  margin-left: 8px;
+  font-size: 1rem;
+  color: #cc0000;
+}
+.status-bar {
+  margin: 18px 32px 0 32px;
+  background: #f1f1f1;
+  border-radius: 6px;
+  padding: 10px 16px;
+  color: #333;
+  font-size: 1rem;
+}
+.error {
+  color: #d32f2f;
+  margin: 18px 32px 0 32px;
+  background: #fff3f3;
+  border: 1px solid #ffd6d6;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 1rem;
+}
+.video-container {
+  margin: 32px 32px 0 32px;
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 18px 18px 24px 18px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+}
+.video-container h2 {
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+  color: #222;
+}
+.video-container video {
+  border-radius: 6px;
+  background: #000;
+}

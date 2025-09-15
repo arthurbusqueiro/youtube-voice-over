@@ -1,0 +1,39 @@
+<div class="main-container">
+  <header class="header">
+    <img src="https://www.svgrepo.com/show/13671/youtube.svg" alt="App Logo" class="logo" />
+    <span class="app-title">YouTube Voice Over</span>
+  </header>
+  <form (ngSubmit)="handleSubmit()" #voiceForm="ngForm" class="form-card">
+    <div class="form-group">
+      <label for="youtubeUrl">YouTube Video URL</label>
+      <input
+        id="youtubeUrl"
+        name="youtubeUrl"
+        [(ngModel)]="youtubeUrl"
+        required
+        placeholder="https://youtube.com/watch?v=..."
+      />
+    </div>
+    <div class="form-group">
+      <label for="language">Target Language</label>
+      <select id="language" name="language" [(ngModel)]="language">
+        <option *ngFor="let lang of languages" [value]="lang.code">{{ lang.name }}</option>
+      </select>
+    </div>
+    <button type="submit" [disabled]="processing || !youtubeUrl" class="yt-btn">
+      <span *ngIf="!processing">Process</span>
+      <span *ngIf="processing" class="loading">Processing...</span>
+    </button>
+  </form>
+  <div *ngIf="jobStatus" class="status-bar">Job status: {{ jobStatus }}</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <div *ngIf="videoUrl" class="video-container">
+    <h2>Processed Video</h2>
+    <video
+      [src]="videoUrl"
+      controls
+      width="100%"
+      poster="https://www.svgrepo.com/show/13671/youtube.svg"
+    ></video>
+  </div>
+</div>
