@@ -17,7 +17,7 @@ export class App {
   language = 'en';
   processing = false;
   jobId = '';
-  videoUrl = '';
+  audioUrl = '';
   error = '';
   jobStatus = '';
   pollInterval: any;
@@ -35,7 +35,7 @@ export class App {
     if (!this.youtubeUrl) return;
     this.processing = true;
     this.error = '';
-    this.videoUrl = '';
+    this.audioUrl = '';
     this.jobStatus = '';
     this.jobId = '';
 
@@ -62,8 +62,8 @@ export class App {
       this.http.get<JobStatus>(`${environment.apiUrl}/job/${this.jobId}`).subscribe({
         next: (job) => {
           this.jobStatus = job.status;
-          if (job.status === 'done' && job.result?.videoUrl) {
-            this.videoUrl = job.result.videoUrl;
+          if (job.status === 'done' && job.result) {
+            this.audioUrl = job.result;
             this.processing = false;
             clearInterval(this.pollInterval);
           } else if (job.status === 'error') {
@@ -89,6 +89,6 @@ interface ProcessResponse {
 
 interface JobStatus {
   status: string;
-  result?: { videoUrl: string };
+  result?: string;
   error?: string;
 }

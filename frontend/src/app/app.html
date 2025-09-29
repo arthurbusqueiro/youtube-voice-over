@@ -27,13 +27,13 @@
   </form>
   <div *ngIf="jobStatus" class="status-bar">Job status: {{ jobStatus }}</div>
   <div *ngIf="error" class="error">{{ error }}</div>
-  <div *ngIf="videoUrl" class="video-container">
+  <div *ngIf="audioUrl" class="video-container">
     <h2>Processed Video</h2>
-    <video
-      [src]="videoUrl"
-      controls
-      width="100%"
-      poster="https://www.svgrepo.com/show/13671/youtube.svg"
-    ></video>
+    <video controls width="100%" poster="https://www.svgrepo.com/show/13671/youtube.svg">
+      <source [src]="youtubeUrl" />
+    </video>
+    <audio controls>
+      <source [src]="audioUrl" />
+    </audio>
   </div>
 </div>

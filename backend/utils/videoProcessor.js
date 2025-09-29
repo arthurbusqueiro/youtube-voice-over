@@ -13,12 +13,21 @@ async function getVideoDetails(videoId) {
         auth: process.env.GOOGLE_API_KEY,
     });
 
-    const response = await youtube.videos.list({
-        part: 'snippet,contentDetails,statistics', // Specify the parts you want to retrieve
-        id: videoId,
-    });
+    console.log(`Fetching video details for video ID: ${videoId}`);
 
-    return response.data.items[0];
+    try {
+        const response = await youtube.videos.list({
+            part: 'snippet,contentDetails,statistics', // Specify the parts you want to retrieve
+            id: videoId,
+        });
+        
+        return response.data.items[0];
+    } catch (error) {
+        console.error('Error fetching video details:', error);
+        throw error;
+    }
+
+
 }
 
 // Function to get original language of the video 
@@ -80,8 +89,9 @@ async function transcribeAudio(audioPath, languageCode) {
         },
     };
 
-    const [response] = await client.recognize(request);
-    return response;
+    const [response] = (await client.recognize(request));
+
+    return response.results[0].alternatives[0].transcript;
 }
 
 // Function to translate text using Google Cloud Translate
@@ -100,8 +110,10 @@ async function translateText(text, targetLanguage, originalLanguage = 'pt-BR') {
 }
 
 // Function to create new audio track from the original track and the translated text using Google Cloud Text-to-Speech
-async function synthesizeSpeech(text, languageCode) {
+async function synthesizeSpeech(text, languageCode, audioPath) {
     const fs = require('fs');
+    const os = require('os');
+    const path = require('path');
     const textToSpeech = require('@google-cloud/text-to-speech');
     const client = new textToSpeech.TextToSpeechClient();
 
@@ -112,7 +124,7 @@ async function synthesizeSpeech(text, languageCode) {
     };
 
     const [response] = await client.synthesizeSpeech(request);
-    const outputPath = '/tmp/synthesized_audio.mp3';
+    const outputPath = path.join(os.tmpdir(), audioPath);
     fs.writeFileSync(outputPath, response.audioContent, 'binary');
     return outputPath;
 }
@@ -144,19 +156,22 @@ async function processJob(job, youtubeUrl) {
 
         const originalLanguage = videoInfo.snippet.defaultAudioLanguage || 'pt-BR';
         console.log(`Original language: ${originalLanguage}`);
-        // const audioPath = await extractAudio(youtubeUrl);
-        // console.log(`Extracted audio path: ${audioPath}`);
-        // const transcription = await transcribeAudio(audioPath, originalLanguage);
-        // console.log(`Transcription complete`);
-        const translatedText = await translateText('O Arthur é um ótimo programador', job.language, originalLanguage);
-        console.log(`Translation complete: ${JSON.stringify(translatedText)}`);
-        // console.log(`Translation complete`);
-        const synthesizedAudio = await synthesizeSpeech(translatedText, job.language);
-        console.log(`Speech synthesis complete at: ${synthesizedAudio}`);
-        const result = await uploadToCloudStorage(synthesizedAudio, `synthesized_audio_${job.youtubeLinkId}_${job.language}.mp3`);
-        // const outputVideoPath = `/tmp/output_${videoId}.mp4`;
-        // const result = await mergeAudioWithVideo(audioPath, synthesizedAudio, outputVideoPath);
-        // console.log(`Video processing complete: ${result.videoUrl}`);
+        const audioPath = await extractAudio(youtubeUrl);
+        console.log(`Extracted audio path: ${audioPath}`);
+        const transcription = await transcribeAudio(audioPath, originalLanguage);
+        console.log(`Transcription complete`, transcription);
+        const translatedText = await translateText(transcription, job.language, originalLanguage);
+        // console.log(`Translation complete: ${JSON.stringify(translatedText)}`);
+        console.log(`Translation complete`, translatedText);
+        const translatedPath =  `synthesized_audio_${job.youtubeLinkId}_${job.language}.mp3`;
+        const synthesizedAudio = await synthesizeSpeech(translatedText, job.language, translatedPath);
+        // console.log(`Speech synthesis complete at: ${synthesizedAudio}`);
+        // const os = require('os');
+        // const path = require('path');
+        // const outputVideoPath = path.join(os.tmpdir(), `output_${job.youtubeLinkId}.mp4`);
+        // const merge = await mergeAudioWithVideo(outputVideoPath, synthesizedAudio, outputVideoPath);
+        // console.log(`Video processing complete: ${merge.videoUrl}`);
+        const result = await uploadToCloudStorage(synthesizedAudio, translatedPath);
 
         job.status = 'done';
         job.result = result;
